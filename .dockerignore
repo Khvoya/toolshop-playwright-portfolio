@@ -1,0 +1,8 @@
+node_modules
+.git
+.runtime
+.artifacts
+artifacts
+.env
+playwright-report
+test-results

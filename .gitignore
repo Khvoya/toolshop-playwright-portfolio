@@ -1,0 +1,13 @@
+node_modules/
+.env
+*.local
+.runtime/
+artifacts/
+allure-results/
+allure-report/
+test-results/
+playwright-report/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

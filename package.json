@@ -1,0 +1,47 @@
+{
+  "name": "toolshop-playwright-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-style TypeScript and Playwright API, UI, admin, and E2E automation portfolio",
+  "engines": {
+    "node": ">=20.17.0"
+  },
+  "scripts": {
+    "app": "node scripts/app.mjs",
+    "generate:api": "node scripts/generate-api.mjs",
+    "test": "playwright test",
+    "test:api": "playwright test --project=api",
+    "test:ui": "playwright test --project=ui",
+    "test:admin": "playwright test --project=admin",
+    "test:e2e": "playwright test --project=e2e",
+    "test:self": "playwright test --project=self",
+    "test:smoke": "playwright test --grep @smoke",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "quality": "npm run format:check && npm run lint && npm run typecheck",
+    "allure:generate": "allure generate artifacts/allure-results --clean -o artifacts/allure-report",
+    "allure:open": "allure open artifacts/allure-report",
+    "gh:ci": "node scripts/gh-ci.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "1.65.0",
+    "@types/node": "^20.19.0",
+    "allure-commandline": "^2.46.1",
+    "allure-js-commons": "^3.14.0",
+    "allure-playwright": "^3.14.0",
+    "dotenv": "^18.0.10",
+    "eslint": "^9.39.5",
+    "globals": "^17.4.0",
+    "prettier": "^3.9.10",
+    "swagger-typescript-api": "^13.14.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "8.46.4"
+  },
+  "overrides": {
+    "chokidar": "4.0.3",
+    "minimatch": "11.0.1"
+  }
+}
