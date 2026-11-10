@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TOOLSHOP_UI_BASE_URL: http://localhost:4200
+  TOOLSHOP_API_BASE_URL: http://localhost:8091
+  TOOLSHOP_ADMIN_EMAIL: admin@practicesoftwaretesting.com
+  TOOLSHOP_ADMIN_PASSWORD: welcome01
+  TOOLSHOP_HEADLESS: "true"
+
+jobs:
+  quality:
+    name: Static quality and self-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run quality
+      - run: npm audit --audit-level=high
+      - run: npm run test:self
+
+  tests:
+    name: ${{ matrix.suite }} tests
+    needs: quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [api, ui, admin, e2e]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Start the pinned local application
+        run: npm run app -- start
+      - if: matrix.suite != 'api'
+        name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify generated Swagger contracts
+        if: matrix.suite == 'api'
+        run: npm run generate:api && git diff --exit-code -- src/api/generated/Api.ts
+      - name: Run PR smoke tests with one diagnostic retry
+        if: github.event_name == 'pull_request'
+        run: npx playwright test --project="${{ matrix.suite }}" --grep @smoke
+      - name: Run the full suite with one diagnostic retry
+        if: github.event_name != 'pull_request'
+        run: npx playwright test --project="${{ matrix.suite }}"
+      - name: Capture application logs on failure
+        if: failure()
+        run: npm run app -- logs
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.suite }}-${{ github.run_number }}
+          path: artifacts/allure-results
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Upload Playwright diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostics-${{ matrix.suite }}-${{ github.run_number }}
+          path: |
+            artifacts/test-results
+            artifacts/playwright-report
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Stop the application
+        if: always()
+        run: npm run app -- stop

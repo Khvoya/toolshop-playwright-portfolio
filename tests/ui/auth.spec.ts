@@ -12,7 +12,7 @@ test("UI @smoke: customer can sign in and sign out", async ({
   });
 
   await test.step("Assert: the user menu replaces the sign-in link", async () => {
-    await expect(header.navigation.root.getByTestId("nav-menu")).toBeVisible();
+    await expect(header.navigation.userMenu).toBeVisible();
   });
 
   await test.step("Act/Assert: sign out and restore anonymous navigation", () =>

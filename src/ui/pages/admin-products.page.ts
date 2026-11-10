@@ -31,6 +31,7 @@ export class AdminProductsPage extends BasePage {
     await expect(this.row(product)).toBeVisible();
     await this.page.getByTestId(`product-edit-${product.id}`).click();
     await expect(this.page.getByTestId("page-title")).toHaveText("Edit Product");
+    await expect(this.page.getByTestId("name")).toHaveValue(product.name);
   }
 
   async delete(product: Product): Promise<void> {

@@ -17,6 +17,10 @@ export class MainNavComponent extends BaseComponent {
     return this.root.getByTestId("cart-quantity");
   }
 
+  get userMenu(): Locator {
+    return this.root.getByTestId("nav-menu");
+  }
+
   async openSignIn(): Promise<void> {
     await this.signInLink.click();
   }
