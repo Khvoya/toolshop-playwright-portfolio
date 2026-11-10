@@ -48,13 +48,15 @@ export class ProductsApi {
     throw new Error("No regular in-stock product is available");
   }
 
-  create(product: NewProduct): Promise<Product> {
-    return test.step("Create a product through admin API", () =>
-      this.client.send<Product>("POST", "/products", {
+  async create(product: NewProduct): Promise<Product> {
+    return test.step("Create a product through admin API", async () => {
+      const created = await this.client.send<Product>("POST", "/products", {
         payload: product,
         expectedStatus: 201,
         retry: false,
-      }));
+      });
+      return this.get(created.id);
+    });
   }
 
   update(productId: string, product: NewProduct): Promise<{ success: boolean }> {

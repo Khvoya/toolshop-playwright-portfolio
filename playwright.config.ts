@@ -27,6 +27,7 @@ export default defineConfig({
   ],
   use: {
     baseURL: settings.uiBaseUrl,
+    testIdAttribute: "data-test",
     headless: settings.headless,
     actionTimeout: settings.actionTimeoutMs,
     navigationTimeout: settings.navigationTimeoutMs,

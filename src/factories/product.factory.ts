@@ -12,7 +12,7 @@ export const ProductFactory = {
   build(references: ProductReferences, overrides: Partial<NewProduct> = {}): NewProduct {
     const unique = randomUUID().replaceAll("-", "").slice(0, 12);
     return {
-      name: `QA Product ${unique}`,
+      name: `Portfolio Product ${unique}`,
       description: `Isolated admin test product ${unique}`,
       stock: 25,
       price: 19.99,
